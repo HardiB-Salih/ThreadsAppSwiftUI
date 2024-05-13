@@ -34,22 +34,34 @@ struct ThreadCell: View {
                         .font(.footnote)
                         .multilineTextAlignment(.leading)
                     
-                    HStack(spacing: 16) {
+                    HStack(alignment: .center, spacing: 16) {
                         Button(action: {}, label: {
                             Image(systemName: "heart")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 19, height: 19, alignment: .top)
                                 
                         })
                         
                         Button(action: {}, label: {
                             Image(systemName: "bubble.right")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 18, height: 18, alignment: .top)
                                 
                         })
                         Button(action: {}, label: {
                             Image(systemName: "arrow.rectanglepath")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 18, height: 18, alignment: .top)
                                 
                         })
                         Button(action: {}, label: {
                             Image(systemName: "paperplane")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 18, height: 18, alignment: .top)
                                 
                         })
                     }
