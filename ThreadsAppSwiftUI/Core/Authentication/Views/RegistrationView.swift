@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct RegistrationView: View {
-    @State private var email = ""
-    @State private var fullName = ""
-    @State private var userName = ""
-    @State private var password = ""
-    
+    @StateObject var viewModel = RegistrationViewModel()
     @Environment(\.dismiss) var dismiss
+    @State private var isSigningUp = false // Track whether sign-up is in progress
+    
     
     var body: some View {
         VStack {
@@ -25,24 +23,52 @@ struct RegistrationView: View {
                 .padding()
             
             VStack {
-                TextField("Enter your email", text: $email)
+                TextField("Enter your email", text: $viewModel.email)
                     .threadsTextFuildModifier()
+                    .textCase(.lowercase)
                     .textInputAutocapitalization(.none)
-                TextField("Enter your full name", text: $fullName)
+                SecureField("Enter your password", text: $viewModel.password)
                     .threadsTextFuildModifier()
-                TextField("Enter your username", text: $userName)
+                TextField("Enter your full name", text: $viewModel.fullname)
                     .threadsTextFuildModifier()
-                SecureField("Enter your password", text: $password)
+                TextField("Enter your username", text: $viewModel.username)
                     .threadsTextFuildModifier()
+                    .textCase(.lowercase)
+                    .textInputAutocapitalization(.none)
+                
+                    
             }
             
             
+            
             Button(action: {
-                
+                Task {
+                    isSigningUp = true
+                    try await viewModel.createUser()
+                    isSigningUp = false
+                }
             }, label: {
-                Text("Sign Up")
-                    .threadsButtonModifier()
-            }).padding(.vertical)
+                if isSigningUp {
+                    // Show a spinner or activity indicator while signing up
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .tint(.white)
+                } else {
+                    // Show "Sign Up" text when not signing up
+                    Text("Sign Up")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                }
+            })
+            
+            .disabled(viewModel.areFieldsEmpty())
+            .frame(width: UIScreen.main.bounds.width - 40, height: 44)
+            .background(viewModel.areFieldsEmpty() ? Color(.darkGray) : .black)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .padding(.vertical)
+            .animation(.default, value: isSigningUp)
+            
             
             Spacer()
             Divider()
@@ -53,7 +79,7 @@ struct RegistrationView: View {
                     Text("Alrady have an account?")
                     Text("Sign in")
                         .fontWeight(.semibold)
-
+                    
                 }
                 .font(.footnote)
                 .foregroundStyle(.black)

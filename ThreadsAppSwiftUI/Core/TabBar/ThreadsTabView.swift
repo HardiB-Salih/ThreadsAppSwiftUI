@@ -9,10 +9,11 @@ import SwiftUI
 
 struct ThreadsTabView: View {
     @State private var selectedTab = 0
+    @State private var showCreateThread = false
+    @Namespace private var tabAnimation
     
     var body: some View {
-        TabView(selection: $selectedTab,
-                content:  {
+        TabView(selection: $selectedTab){
             FeedView()
                 .tabItem { Image(systemName: selectedTab == 0 ? "house.fill" : "house")
                         .environment(\.symbolVariants, selectedTab == 0 ? .fill : .none)
@@ -26,10 +27,10 @@ struct ThreadsTabView: View {
                 .tag(1)
             
             
-            CreateThreadView()
+            FeedView()
                 .tabItem { Image(systemName: "plus")}
                 .onAppear { selectedTab = 2 }
-                .tag(2)
+                .tag(0)
             
             ActivityView()
                 .tabItem { Image(systemName: selectedTab == 3 ? "heart.fill" : "heart")
@@ -46,7 +47,20 @@ struct ThreadsTabView: View {
             .onAppear { selectedTab = 4 }
             .tag(4)
             
-        }).tint(.black)
+        }
+        .onChange(of: selectedTab, { oldValue, newValue in
+            withAnimation(.smooth) {
+                showCreateThread = selectedTab == 2
+            }
+        })
+        .sheet(isPresented: $showCreateThread, onDismiss: {
+            withAnimation(.bouncy) {
+                selectedTab = 0
+            }
+        }, content: {
+            CreateThreadView()
+        })
+        .tint(.black)
     }
 }
 
