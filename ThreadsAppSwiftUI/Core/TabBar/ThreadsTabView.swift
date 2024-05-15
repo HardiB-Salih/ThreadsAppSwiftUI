@@ -13,7 +13,7 @@ struct ThreadsTabView: View {
     @Namespace private var tabAnimation
     
     var body: some View {
-        TabView(selection: $selectedTab){
+        TabView(selection: $selectedTab) {
             FeedView()
                 .tabItem { Image(systemName: selectedTab == 0 ? "house.fill" : "house")
                         .environment(\.symbolVariants, selectedTab == 0 ? .fill : .none)
@@ -26,11 +26,10 @@ struct ThreadsTabView: View {
                 .onAppear { selectedTab = 1 }
                 .tag(1)
             
-            
-            FeedView()
+            CreateThreadView(isPresented: $showCreateThread)
                 .tabItem { Image(systemName: "plus")}
                 .onAppear { selectedTab = 2 }
-                .tag(0)
+                .tag(2)
             
             ActivityView()
                 .tabItem { Image(systemName: selectedTab == 3 ? "heart.fill" : "heart")
@@ -50,16 +49,15 @@ struct ThreadsTabView: View {
         }
         .onChange(of: selectedTab, { oldValue, newValue in
             withAnimation(.smooth) {
-                showCreateThread = selectedTab == 2
+                if newValue == 2 {
+                    showCreateThread = true
+                    selectedTab = 0
+                }
             }
         })
-        .sheet(isPresented: $showCreateThread, onDismiss: {
-            withAnimation(.bouncy) {
-                selectedTab = 0
-            }
-        }, content: {
-            CreateThreadView()
-        })
+        .sheet(isPresented: $showCreateThread) {
+            CreateThreadView(isPresented: $showCreateThread)
+        }
         .tint(.black)
     }
 }

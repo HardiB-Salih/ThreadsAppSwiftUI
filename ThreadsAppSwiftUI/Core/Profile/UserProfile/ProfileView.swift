@@ -10,8 +10,6 @@ import SwiftUI
 struct ProfileView: View {
     let user: User
     
-
-    
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack (spacing: 20){
@@ -31,10 +29,11 @@ struct ProfileView: View {
                 })
                 
                 // user content list view
-                UserContentListView()
+                UserContentListView(user: user)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .padding(.horizontal)
         
     }

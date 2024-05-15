@@ -29,8 +29,11 @@ struct ExploreView: View {
                     ProfileView(user: user)
                 }
             }
+            .toolbar(.visible, for: .tabBar)
             .navigationTitle("Search")
             .searchable(text: $searchText, prompt: "Search")
+           
+
         }
     }
 }

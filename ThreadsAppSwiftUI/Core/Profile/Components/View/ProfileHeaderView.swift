@@ -40,7 +40,7 @@ struct ProfileHeaderView: View {
                     .foregroundStyle(Color(.gray))
             }
             Spacer()
-            CircleProfileImageView(imageName: "image4", imageSize: 60)
+            CircleProfileImageView(user: user, size: .large)
         }
     }
 }

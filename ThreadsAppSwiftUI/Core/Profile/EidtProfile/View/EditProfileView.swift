@@ -9,13 +9,16 @@ import SwiftUI
 import PhotosUI
 
 struct EditProfileView: View {
+    let user: User
     @State private var bio = ""
     @State private var link = ""
     @State private var isPrivateProfile = false
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var viewModel: CurrentUserProfileViewModel
-
-
+    @State private var isLoading = false
+    
+    
+    @StateObject var viewModel = EidtProfileViewModel()
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -28,8 +31,8 @@ struct EditProfileView: View {
                         VStack (alignment: .leading){
                             Text("Name")
                                 .fontWeight(.semibold)
-                            Text("HardiB. Salih")
-                                
+                            Text(user.fullname)
+                            
                         }
                         Spacer()
                         PhotosPicker(selection: $viewModel.selectedItem) {
@@ -40,19 +43,19 @@ struct EditProfileView: View {
                                     .frame(width: 40, height: 40)
                                     .clipShape(Circle())
                             } else {
-                                CircleProfileImageView(imageName: "image1")
+                                CircleProfileImageView(user: user, size: .small)
                             }
                         }
                         
                     }
                     Divider()
-
+                    
                     //Bio Field
                     VStack (alignment: .leading){
                         Text("Bio")
                             .fontWeight(.semibold)
                         TextField("Enter your Bio ...", text: $bio, axis: .vertical)
-                            
+                        
                     }
                     Divider()
                     
@@ -61,7 +64,7 @@ struct EditProfileView: View {
                         Text("Link")
                             .fontWeight(.semibold)
                         TextField("Add Link...", text: $link, axis: .vertical)
-                            
+                        
                     }
                     Divider()
                     
@@ -88,16 +91,34 @@ struct EditProfileView: View {
                         .foregroundStyle(Color(.black))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { }
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color(.black))
+                    Button("Done") {
+                        isLoading = true
+                        Task {
+                            try await viewModel.updateUserData()
+                            isLoading = false
+                            dismiss()
+                        }
+                        
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color(.black))
                 }
-            }
+            } 
+            .overlay(
+                Group {
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .tint(.black)
+                    }
+                }
+            )
         }
+       
     }
 }
 
 #Preview {
-    EditProfileView()
+    EditProfileView(user: dev.user)
 }
